@@ -33,7 +33,7 @@ function Brand() {
 type NavLinksProps = {
   pathname: string;
   activeSection: string;
-  onNavigate: (href: string) => void;
+  onNavigate: (item: NavItem) => void; // DIUBAH: menerima item, bukan href
 };
 
 function NavLinks({ pathname, activeSection, onNavigate }: NavLinksProps) {
@@ -51,7 +51,7 @@ function NavLinks({ pathname, activeSection, onNavigate }: NavLinksProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => onNavigate(item.href)}
+                onClick={() => onNavigate(item)} // DIUBAH: kirim item
                 aria-current={active ? "page" : undefined}
                 className={`flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors ${
                   active
@@ -89,8 +89,9 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(DEFAULT_SECTION);
 
-  function handleNavigate(href: string) {
-    setActiveSection(href);
+  // DIUBAH: hanya menu section yang dicatat sebagai activeSection
+  function handleNavigate(item: NavItem) {
+    if (item.kind === "section") setActiveSection(item.href);
     setOpen(false);
   }
 
