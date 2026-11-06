@@ -1,4 +1,4 @@
-import { CircleHelp, History, LayoutDashboard } from "lucide-react";
+import { CircleHelp, FilePlus, History, LayoutDashboard } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {
@@ -21,5 +21,9 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Pengajuan Terbaru", href: "/#terbaru", icon: History, kind: "section" },
       { label: "Panduan", href: "/#panduan", icon: CircleHelp, kind: "section" },
     ],
+  },
+  {
+    title: "Analisis",
+    items: [{ label: "Analisis Baru", href: "/analisis/baru", icon: FilePlus, kind: "page" }],
   },
 ];
