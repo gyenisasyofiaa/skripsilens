@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+datasource db {
+  provider = "postgresql"
+}
+
+enum StatusAnalisis {
+  MENUNGGU
+  DIPROSES
+  SELESAI
+  GAGAL
+}
+
+enum CakupanDokumen {
+  BAB1_LENGKAP
+  LATAR_BELAKANG
+}
+
+enum StatusRekomendasi {
+  DITERIMA
+  TIDAK_SINKRON
+  DITOLAK
+}
+
+enum JenisKeputusan {
+  DISETUJUI
+  REVISI
+  DITOLAK
+}
+
+model Pengajuan {
+  id             String             @id @default(uuid())
+  namaMahasiswa  String
+  nim            String
+  judul          String
+  pembimbing     String?
+  namaFile       String
+  pathFile       String
+  teksDokumen    String?
+  cakupan        CakupanDokumen?
+  statusAnalisis StatusAnalisis     @default(MENUNGGU)
+  pesanGagal     String?
+  skorTotal      Int?
+  rekomendasi    StatusRekomendasi?
+  modelVersi     String?
+  promptVersi    String?
+  dibuatPada     DateTime           @default(now())
+  diperbaruiPada DateTime           @updatedAt
+
+  skorKriteria SkorKriteria[]
+  keputusan    Keputusan?
+
+  @@index([dibuatPada])
+  @@map("pengajuan")
+}
+
+model SkorKriteria {
+  id           String  @id @default(uuid())
+  pengajuanId  String
+  kode         String
+  nama         String
+  bobot        Int
+  bobotEfektif Float?
+  dinilai      Boolean @default(true)
+  skor         Int?
+  kutipan      Json    @default("[]")
+  saran        String?
+
+  pengajuan Pengajuan @relation(fields: [pengajuanId], references: [id], onDelete: Cascade)
+
+  @@unique([pengajuanId, kode])
+  @@map("skor_kriteria")
+}
+
+model Keputusan {
+  id             String         @id @default(uuid())
+  pengajuanId    String         @unique
+  keputusan      JenisKeputusan
+  catatan        String?
+  diputuskanPada DateTime       @default(now())
+
+  pengajuan Pengajuan @relation(fields: [pengajuanId], references: [id], onDelete: Cascade)
+
+  @@map("keputusan")
+}

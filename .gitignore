@@ -43,3 +43,6 @@ next-env.d.ts
 # data lokal aplikasi (dokumen mahasiswa & database)
 /storage/
 /data/
+
+# client Prisma hasil generate
+/src/generated/prisma
