@@ -9,18 +9,20 @@ export const metadata: Metadata = {
   title: "Analisis Baru",
 };
 
+// DIUBAH: setiap kriteria mencatat bagian Bab 1 yang dibutuhkan
 const KRITERIA = [
-  { nama: "Judul – latar belakang", bobot: 25 },
-  { nama: "Judul – rumusan masalah", bobot: 25 },
-  { nama: "Rumusan – tujuan", bobot: 20 },
-  { nama: "Objek & lokasi penelitian", bobot: 15 },
-  { nama: "Kesesuaian metode", bobot: 15 },
+  { nama: "Judul – latar belakang", bobot: 25, butuh: "Latar Belakang" },
+  { nama: "Judul – rumusan masalah", bobot: 25, butuh: "Rumusan Masalah" },
+  { nama: "Rumusan – tujuan", bobot: 20, butuh: "Rumusan Masalah dan Tujuan" },
+  { nama: "Objek & lokasi penelitian", bobot: 15, butuh: "Latar Belakang" },
+  { nama: "Kesesuaian metode", bobot: 15, butuh: "Latar Belakang" },
 ];
 
 const ATURAN: { status: StatusRekomendasi; syarat: string }[] = [
   { status: "DITERIMA", syarat: "Skor total minimal 75 dan tidak ada kriteria di bawah 50." },
   { status: "TIDAK_SINKRON", syarat: "Skor total 50–74, atau ada kriteria di bawah 50." },
-  { status: "DITOLAK", syarat: "Skor total di bawah 50, atau dokumen bukan Bab 1." },
+  // DIUBAH: syarat minimum dokumen adalah Latar Belakang
+  { status: "DITOLAK", syarat: "Skor total di bawah 50, atau bagian Latar Belakang tidak ditemukan." },
 ];
 
 export default function AnalisisBaruPage() {
@@ -35,8 +37,10 @@ export default function AnalisisBaruPage() {
           Kembali ke Beranda
         </Link>
         <h1 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">Analisis Baru</h1>
-        <p className="text-[15px] text-neutral-600">
-          Isi data singkat mahasiswa dan unggah Bab 1 untuk dinilai keselarasannya dengan judul.
+        {/* DIUBAH: syarat dokumen */}
+        <p className="max-w-3xl text-[15px] leading-relaxed text-neutral-600">
+          Isi data singkat mahasiswa dan unggah Bab 1 dalam format PDF berteks (bukan hasil scan). Dokumen boleh
+          berisi Bab 1 lengkap atau minimal bagian Latar Belakang.
         </p>
       </header>
 
@@ -48,12 +52,21 @@ export default function AnalisisBaruPage() {
             <h2 className="text-[15px] font-semibold text-neutral-900">Kriteria yang dinilai</h2>
             <ul className="flex flex-col gap-3">
               {KRITERIA.map((kriteria) => (
-                <li key={kriteria.nama} className="flex justify-between gap-3 text-sm text-neutral-800">
-                  <span>{kriteria.nama}</span>
-                  <span className="font-semibold text-neutral-600">{kriteria.bobot}%</span>
+                <li key={kriteria.nama} className="flex justify-between gap-3">
+                  {/* DIUBAH: tampilkan bagian yang dibutuhkan */}
+                  <div className="flex flex-col">
+                    <span className="text-sm text-neutral-800">{kriteria.nama}</span>
+                    <span className="text-xs text-neutral-600">Butuh: {kriteria.butuh}</span>
+                  </div>
+                  <span className="text-sm font-semibold text-neutral-600">{kriteria.bobot}%</span>
                 </li>
               ))}
             </ul>
+            {/* DIUBAH: catatan bobot menyesuaikan */}
+            <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-xs leading-relaxed text-neutral-700">
+              Jika suatu bagian tidak ditemukan, kriteria yang membutuhkannya tidak dinilai, dan bobot kriteria
+              lainnya dihitung ulang agar totalnya tetap 100%.
+            </p>
           </section>
 
           <section className="flex flex-col gap-3.5 rounded-xl border border-neutral-200 bg-white p-5 sm:p-6">
