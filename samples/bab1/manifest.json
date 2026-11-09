@@ -1,0 +1,65 @@
+[
+  {
+    "file": "01-selaras.pdf",
+    "namaMahasiswa": "Dimas Pratama",
+    "nim": "2101027",
+    "judul": "Sistem Informasi Inventaris Barang Berbasis Web pada Toko Bangunan Sejahtera Makmur",
+    "expectedRekomendasi": "DITERIMA",
+    "expectedCakupan": "BAB1_LENGKAP",
+    "catatan": "Judul, latar belakang, rumusan, tujuan, objek, dan metode konsisten."
+  },
+  {
+    "file": "02-tidak-sinkron.pdf",
+    "namaMahasiswa": "Rina Aprilia",
+    "nim": "2101011",
+    "judul": "Pengaruh Kualitas Layanan terhadap Kepuasan Pelanggan pada Koperasi Simpan Pinjam Mitra Usaha",
+    "expectedRekomendasi": "TIDAK_SINKRON",
+    "expectedCakupan": "BAB1_LENGKAP",
+    "catatan": "Judul menyebut kepuasan pelanggan, tetapi seluruh Bab 1 membahas loyalitas anggota."
+  },
+  {
+    "file": "03-ditolak-tidak-relevan.pdf",
+    "namaMahasiswa": "Agus Setiawan",
+    "nim": "2101042",
+    "judul": "Peran Media Sosial dalam Pembentukan Citra Desa Wisata Lembah Hijau",
+    "expectedRekomendasi": "DITOLAK",
+    "expectedCakupan": "BAB1_LENGKAP",
+    "catatan": "Bab 1 membahas pembuatan sistem tiket daring; media sosial dan citra tidak dibahas sama sekali."
+  },
+  {
+    "file": "04-tidak-sinkron-metode.pdf",
+    "namaMahasiswa": "Maya Lestari",
+    "nim": "2101055",
+    "judul": "Penerapan Metode SAW dalam Pemilihan Karyawan Terbaik pada CV Karya Abadi",
+    "expectedRekomendasi": "TIDAK_SINKRON",
+    "expectedCakupan": "BAB1_LENGKAP",
+    "catatan": "Judul dan latar belakang menyebut metode SAW, tetapi rumusan masalah, tujuan, dan batasan memakai metode AHP."
+  },
+  {
+    "file": "05-selaras-sentimen.pdf",
+    "namaMahasiswa": "Siti Nurhaliza",
+    "nim": "2101034",
+    "judul": "Analisis Sentimen Ulasan Aplikasi Transportasi Daring Menggunakan Naive Bayes",
+    "expectedRekomendasi": "DITERIMA",
+    "expectedCakupan": "BAB1_LENGKAP",
+    "catatan": "Objek, metode, rumusan, dan tujuan konsisten dengan judul."
+  },
+  {
+    "file": "06-latar-belakang-selaras.pdf",
+    "namaMahasiswa": "Fajar Ramadhan",
+    "nim": "2101068",
+    "judul": "Rancang Bangun Aplikasi Pengaduan Layanan Akademik Berbasis Web pada Fakultas Teknik Universitas Nusantara Jaya",
+    "expectedRekomendasi": "DITERIMA",
+    "expectedCakupan": "LATAR_BELAKANG",
+    "catatan": "Hanya berisi Latar Belakang. Objek, masalah, dan pendekatan selaras dengan judul. Kriteria rumusan dan tujuan harus ditandai tidak dinilai."
+  },
+  {
+    "file": "07-latar-belakang-tidak-sinkron.pdf",
+    "namaMahasiswa": "Nadia Putri",
+    "nim": "2101073",
+    "judul": "Pengaruh Promosi Media Sosial terhadap Minat Beli Konsumen pada Toko Kue Manis Sari",
+    "expectedRekomendasi": "TIDAK_SINKRON",
+    "expectedCakupan": "LATAR_BELAKANG",
+    "catatan": "Hanya berisi Latar Belakang. Judul menyebut promosi media sosial, tetapi latar belakang membahas harga dan kualitas produk."
+  }
+]
