@@ -7,15 +7,14 @@ import { useRouter } from "next/navigation";
 import { FileText, LoaderCircle, Sparkles, Upload, X } from "lucide-react";
 
 const MAKS_UKURAN = 10 * 1024 * 1024;
-const EKSTENSI_DIIZINKAN = [".pdf", ".docx"];
+const EKSTENSI_DIIZINKAN = ".pdf"; // DIUBAH: hanya PDF
 
 type FieldWajib = "nama" | "nim" | "judul" | "berkas";
 type FormErrors = Partial<Record<FieldWajib, string>>;
 
 function cekBerkas(file: File): string | null {
-  const namaFile = file.name.toLowerCase();
-  if (!EKSTENSI_DIIZINKAN.some((ext) => namaFile.endsWith(ext))) {
-    return "Format file harus PDF atau DOCX.";
+  if (!file.name.toLowerCase().endsWith(EKSTENSI_DIIZINKAN)) {
+    return "Format file harus PDF.";
   }
   if (file.size > MAKS_UKURAN) {
     return "Ukuran file maksimal 10 MB.";
@@ -227,11 +226,12 @@ export default function UploadForm() {
             <span className="text-sm font-semibold text-neutral-900">
               Klik untuk memilih file atau seret ke sini
             </span>
-            <span className="text-[13px] text-neutral-600">PDF atau DOCX, maksimal 10 MB</span>
+            {/* DIUBAH: hanya PDF */}
+            <span className="text-[13px] text-neutral-600">PDF, maksimal 10 MB</span>
             <input
               id="berkas"
               type="file"
-              accept=".pdf,.docx"
+              accept=".pdf,application/pdf" // DIUBAH
               onChange={handleInputBerkas}
               aria-describedby={errors.berkas ? "berkas-error" : undefined}
               className="sr-only"
@@ -265,9 +265,9 @@ export default function UploadForm() {
           className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-70"
         >
           {mengirim ? (
-            <LoaderCircle className="size-[18px] animate-spin" aria-hidden="true" />
+            <LoaderCircle className="size-18px animate-spin" aria-hidden="true" />
           ) : (
-            <Sparkles className="size-[18px]" aria-hidden="true" />
+            <Sparkles className="size-18px" aria-hidden="true" />
           )}
           {mengirim ? "Menganalisis..." : "Mulai Analisis"}
         </button>
