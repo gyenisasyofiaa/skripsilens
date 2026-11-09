@@ -1,14 +1,59 @@
 import type { Metadata } from "next";
-import { connection } from "next/server";
 import StatusBadge from "@/components/analisis/StatusBadge";
-import { prisma } from "@/server/db/client";
 import type { RingkasanPengajuan, StatusKeputusan } from "@/types/analisis";
 
 export const metadata: Metadata = {
   title: "Beranda",
 };
 
-const JUMLAH_TERBARU = 10;
+// Data contoh dari dataset sampel. Diganti data database pada tahap berikutnya.
+const PENGAJUAN_CONTOH: RingkasanPengajuan[] = [
+  {
+    id: "contoh-1",
+    namaMahasiswa: "Rina Aprilia",
+    nim: "2101011",
+    judul: "Pengaruh Kualitas Layanan terhadap Kepuasan Pelanggan pada Koperasi Simpan Pinjam Mitra Usaha",
+    skorTotal: 67,
+    rekomendasi: "TIDAK_SINKRON",
+    keputusan: "MENUNGGU",
+  },
+  {
+    id: "contoh-2",
+    namaMahasiswa: "Dimas Pratama",
+    nim: "2101027",
+    judul: "Sistem Informasi Inventaris Barang Berbasis Web pada Toko Bangunan Sejahtera Makmur",
+    skorTotal: 84,
+    rekomendasi: "DITERIMA",
+    keputusan: "DISETUJUI",
+  },
+  {
+    id: "contoh-3",
+    namaMahasiswa: "Siti Nurhaliza",
+    nim: "2101034",
+    judul: "Analisis Sentimen Ulasan Aplikasi Transportasi Daring Menggunakan Naive Bayes",
+    skorTotal: 79,
+    rekomendasi: "DITERIMA",
+    keputusan: "MENUNGGU",
+  },
+  {
+    id: "contoh-4",
+    namaMahasiswa: "Agus Setiawan",
+    nim: "2101042",
+    judul: "Peran Media Sosial dalam Pembentukan Citra Desa Wisata Lembah Hijau",
+    skorTotal: 41,
+    rekomendasi: "DITOLAK",
+    keputusan: "MENUNGGU",
+  },
+  {
+    id: "contoh-5",
+    namaMahasiswa: "Maya Lestari",
+    nim: "2101055",
+    judul: "Penerapan Metode SAW dalam Pemilihan Karyawan Terbaik pada CV Karya Abadi",
+    skorTotal: 58,
+    rekomendasi: "TIDAK_SINKRON",
+    keputusan: "REVISI",
+  },
+];
 
 const KEPUTUSAN_STYLE: Record<StatusKeputusan, { label: string; className: string }> = {
   MENUNGGU: { label: "Menunggu", className: "text-neutral-600" },
@@ -20,7 +65,7 @@ const KEPUTUSAN_STYLE: Record<StatusKeputusan, { label: string; className: strin
 const LANGKAH_PANDUAN = [
   {
     judul: "Isi data & unggah Bab 1",
-    deskripsi: "Masukkan nama, NIM, dan judul yang diajukan, lalu unggah Bab 1 dalam format PDF.",
+    deskripsi: "Masukkan nama, NIM, dan judul yang diajukan, lalu unggah Bab 1 dalam format PDF atau DOCX.",
   },
   {
     judul: "Sistem menganalisis",
@@ -34,62 +79,29 @@ const LANGKAH_PANDUAN = [
 
 const KOLOM_TABEL = ["Mahasiswa", "Judul", "Skor", "Rekomendasi", "Keputusan"];
 
-async function ambilDataBeranda() {
-  const [total, menunggu, diterima, tidakDiterima, terbaru] = await Promise.all([
-    prisma.pengajuan.count(),
-    prisma.pengajuan.count({
-      where: { statusAnalisis: "SELESAI", keputusan: { is: null } },
-    }),
-    prisma.pengajuan.count({ where: { rekomendasi: "DITERIMA" } }),
-    prisma.pengajuan.count({
-      where: { rekomendasi: { in: ["TIDAK_SINKRON", "DITOLAK"] } },
-    }),
-    prisma.pengajuan.findMany({
-      where: { statusAnalisis: "SELESAI" },
-      orderBy: { dibuatPada: "desc" },
-      take: JUMLAH_TERBARU,
-      select: {
-        id: true,
-        namaMahasiswa: true,
-        nim: true,
-        judul: true,
-        skorTotal: true,
-        rekomendasi: true,
-        keputusan: { select: { keputusan: true } },
-      },
-    }),
-  ]);
-
-  const daftar: RingkasanPengajuan[] = terbaru.flatMap((p) =>
-    p.skorTotal !== null && p.rekomendasi !== null
-      ? [
-          {
-            id: p.id,
-            namaMahasiswa: p.namaMahasiswa,
-            nim: p.nim,
-            judul: p.judul,
-            skorTotal: p.skorTotal,
-            rekomendasi: p.rekomendasi,
-            keputusan: p.keputusan?.keputusan ?? "MENUNGGU",
-          },
-        ]
-      : [],
-  );
-
-  return {
-    ringkasan: [
-      { label: "Total pengajuan", nilai: total, className: "text-neutral-900" },
-      { label: "Menunggu keputusan", nilai: menunggu, className: "text-neutral-900" },
-      { label: "Rekomendasi diterima", nilai: diterima, className: "text-green-800" },
-      { label: "Tidak sinkron / ditolak", nilai: tidakDiterima, className: "text-amber-800" },
-    ],
-    daftar,
-  };
-}
-
-export default async function BerandaPage() {
-  await connection();
-  const { ringkasan, daftar } = await ambilDataBeranda();
+export default function BerandaPage() {
+  const ringkasan = [
+    {
+      label: "Total pengajuan",
+      nilai: PENGAJUAN_CONTOH.length,
+      className: "text-neutral-900",
+    },
+    {
+      label: "Menunggu keputusan",
+      nilai: PENGAJUAN_CONTOH.filter((p) => p.keputusan === "MENUNGGU").length,
+      className: "text-neutral-900",
+    },
+    {
+      label: "Rekomendasi diterima",
+      nilai: PENGAJUAN_CONTOH.filter((p) => p.rekomendasi === "DITERIMA").length,
+      className: "text-green-800",
+    },
+    {
+      label: "Tidak sinkron / ditolak",
+      nilai: PENGAJUAN_CONTOH.filter((p) => p.rekomendasi !== "DITERIMA").length,
+      className: "text-amber-800",
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-10">
@@ -103,9 +115,14 @@ export default async function BerandaPage() {
       </header>
 
       <section id="ringkasan" aria-labelledby="ringkasan-title" className="flex flex-col gap-4">
-        <h2 id="ringkasan-title" className="text-lg font-semibold text-neutral-900">
-          Ringkasan
-        </h2>
+        <div className="flex items-center gap-2.5">
+          <h2 id="ringkasan-title" className="text-lg font-semibold text-neutral-900">
+            Ringkasan
+          </h2>
+          <span className="rounded-full border border-neutral-200 bg-white px-2 py-0.5 text-xs text-neutral-600">
+            Data contoh
+          </span>
+        </div>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {ringkasan.map((item) => (
             <div
@@ -124,79 +141,68 @@ export default async function BerandaPage() {
           Pengajuan Terbaru
         </h2>
 
-        {daftar.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-neutral-300 bg-white px-6 py-10 text-center">
-            <p className="text-sm font-semibold text-neutral-900">Belum ada pengajuan</p>
-            <p className="mt-1 text-sm text-neutral-600">
-              Pengajuan yang selesai dianalisis akan tampil di sini.
-            </p>
-          </div>
-        ) : (
-          <>
-            <ul className="flex flex-col gap-3 md:hidden">
-              {daftar.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-neutral-900">{p.namaMahasiswa}</p>
-                      <p className="text-xs text-neutral-600">{p.nim}</p>
-                    </div>
-                    <span className="text-sm font-bold text-neutral-900">
-                      {p.skorTotal}
-                      <span className="font-normal text-neutral-600">/100</span>
-                    </span>
-                  </div>
-                  <p className="text-[13px] leading-relaxed text-neutral-700">{p.judul}</p>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <StatusBadge status={p.rekomendasi} />
-                    <span className={`text-xs ${KEPUTUSAN_STYLE[p.keputusan].className}`}>
-                      Keputusan: {KEPUTUSAN_STYLE[p.keputusan].label}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+        <ul className="flex flex-col gap-3 md:hidden">
+          {PENGAJUAN_CONTOH.map((p) => (
+            <li
+              key={p.id}
+              className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-neutral-900">{p.namaMahasiswa}</p>
+                  <p className="text-xs text-neutral-600">{p.nim}</p>
+                </div>
+                <span className="text-sm font-bold text-neutral-900">
+                  {p.skorTotal}
+                  <span className="font-normal text-neutral-600">/100</span>
+                </span>
+              </div>
+              <p className="text-[13px] leading-relaxed text-neutral-700">{p.judul}</p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <StatusBadge status={p.rekomendasi} />
+                <span className={`text-xs ${KEPUTUSAN_STYLE[p.keputusan].className}`}>
+                  Keputusan: {KEPUTUSAN_STYLE[p.keputusan].label}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
 
-            <div className="hidden overflow-x-auto rounded-xl border border-neutral-200 bg-white md:block">
-              <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="bg-neutral-50">
-                  <tr>
-                    {KOLOM_TABEL.map((kolom) => (
-                      <th
-                        key={kolom}
-                        scope="col"
-                        className="border-b border-neutral-200 px-4 py-3 text-xs font-semibold text-neutral-600"
-                      >
-                        {kolom}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-100">
-                  {daftar.map((p) => (
-                    <tr key={p.id}>
-                      <td className="px-4 py-3.5 align-top">
-                        <p className="font-semibold text-neutral-900">{p.namaMahasiswa}</p>
-                        <p className="text-xs text-neutral-600">{p.nim}</p>
-                      </td>
-                      <td className="max-w-sm px-4 py-3.5 align-top text-neutral-700">{p.judul}</td>
-                      <td className="px-4 py-3.5 align-top font-semibold text-neutral-900">{p.skorTotal}</td>
-                      <td className="px-4 py-3.5 align-top">
-                        <StatusBadge status={p.rekomendasi} />
-                      </td>
-                      <td className={`px-4 py-3.5 align-top ${KEPUTUSAN_STYLE[p.keputusan].className}`}>
-                        {KEPUTUSAN_STYLE[p.keputusan].label}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+        <div className="hidden overflow-x-auto rounded-xl border border-neutral-200 bg-white md:block">
+          <table className="w-full min-w-180 text-left text-sm">
+            <thead className="bg-neutral-50">
+              <tr>
+                {KOLOM_TABEL.map((kolom) => (
+                  <th
+                    key={kolom}
+                    scope="col"
+                    className="border-b border-neutral-200 px-4 py-3 text-xs font-semibold text-neutral-600"
+                  >
+                    {kolom}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100">
+              {PENGAJUAN_CONTOH.map((p) => (
+                <tr key={p.id}>
+                  <td className="px-4 py-3.5 align-top">
+                    <p className="font-semibold text-neutral-900">{p.namaMahasiswa}</p>
+                    <p className="text-xs text-neutral-600">{p.nim}</p>
+                  </td>
+                  <td className="max-w-sm px-4 py-3.5 align-top text-neutral-700">{p.judul}</td>
+                  <td className="px-4 py-3.5 align-top font-semibold text-neutral-900">{p.skorTotal}</td>
+                  <td className="px-4 py-3.5 align-top">
+                    <StatusBadge status={p.rekomendasi} />
+                  </td>
+                  <td className={`px-4 py-3.5 align-top ${KEPUTUSAN_STYLE[p.keputusan].className}`}>
+                    {KEPUTUSAN_STYLE[p.keputusan].label}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section id="panduan" aria-labelledby="panduan-title" className="flex flex-col gap-4">
